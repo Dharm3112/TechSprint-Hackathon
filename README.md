@@ -1,88 +1,82 @@
-# ⚡ NOVUS: Autonomous Customer Resolution Engine
+# ⚡ NOVUS: ADK-Powered Autonomous Resolution Engine
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
+![ADK](https://img.shields.io/badge/Agent_Development_Kit-Enabled-blue?style=for-the-badge&logo=google)
 ![AI Model](https://img.shields.io/badge/Google_Gemini-2.5_Flash-orange?style=for-the-badge&logo=google)
-![Architecture](https://img.shields.io/badge/Architecture-Multi--Agent_Swarm-purple?style=for-the-badge)
+![Architecture](https://img.shields.io/badge/Architecture-Declarative_Swarm-purple?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge)
 
-> **Redefining Enterprise Support with Self-Correcting, Multi-Agent Intelligence.**
+> **The Next Generation of Enterprise Support: Built 100% on the Agent Development Kit (ADK).**
 
 ---
 
 ## 🧠 The Concept
-**NOVUS** is not a chatbot. It is a **deterministic, multi-agent orchestration system** designed to solve complex customer support workflows autonomously. 
+**NOVUS** is a deterministic, multi-agent orchestration system built entirely using the **Agent Development Kit (ADK)** framework. 
 
-Unlike traditional LLM wrappers that simply generate text, NOVUS employs a **"Swarm Architecture"** where specialized agents collaborate, critique, and refine their outputs before ever interacting with a customer. It mimics the workflow of a human support team—complete with a Triage Specialist, a Senior Strategist, and a Quality Assurance Supervisor.
+By leveraging the power of ADK's declarative nature, NOVUS moves beyond fragile code-based orchestration. Instead, it defines behaviors, instructions, and tools in structured configuration files (`root_agent.yaml`), allowing for a rapidly scalable "Swarm Architecture." Specialized agents collaborate, critique, and refine outcomes before ever interacting with a customer.
 
 ---
 
 ## 🌟 Key Differentiators
 
-### 🛡️ The "Critic Loop" (Self-Correction)
-Most AI agents "hallucinate" or drift in tone. NOVUS features a dedicated **Critic Agent** that acts as a guardrail. 
-* It reviews every draft response against the calculated **Risk Score**.
-* If a response is too casual for a high-severity issue, the Critic **rejects** the draft and forces the Drafter Agent to rewrite it.
-* *Result:* Zero "tone-deaf" responses, ensuring 100% brand safety.
+### 🛡️ ADK-Native "Critic Loop"
+Using ADK's sub-agent capabilities, we implemented a dedicated **Critic Agent** guardrail.
+* **Workflow:** The `Drafter` agent outputs a response, which is immediately routed to the `Critic` agent.
+* **Logic:** The Critic evaluates the draft against the computed **Risk Score**.
+* **Self-Correction:** If the tone is mismatched (e.g., too casual for a legal threat), the Critic rejects the output and instructs the swarm to retry.
+* *Result:* Zero "hallucinations" or tone-deaf replies.
 
-### 🧠 Semantic Memory (RAG)
-NOVUS doesn't start from scratch. It utilizes **Vector Embeddings** to recall how similar tickets were resolved in the past.
-* *Recurring Issue Detection:* "Oh, this looks like the server outage from last Tuesday."
-* *Consistency:* Ensures different customers get the same solution for the same problem.
+### 🧩 Declarative Agent Definitions
+Unlike traditional implementations where agent logic is buried in Python scripts, NOVUS defines its brain in **YAML**.
+* **Modularity:** New agents can be added by simply appending to `sub_agents` in the configuration.
+* **Transparency:** The prompt engineering and instructions are decoupled from the execution logic.
 
-### ⚖️ Dynamic Risk Scoring
-We move beyond simple "High/Low" tags. NOVUS calculates a weighted **Risk Index (0-100)** based on:
-1.  **Sentiment Magnitude** (Hostility vs. Frustration)
-2.  **Urgency Keywords** (e.g., "Lawsuit", "Fire", "Data Breach")
-3.  **Customer History** (LTV and past churn threats)
+### 🧠 Semantic Memory Integration
+Integrated directly into the ADK flow, NOVUS utilizes **Vector Embeddings** to recall historical resolutions.
+* *Recurring Issue Detection:* "This complaint matches the pattern of the Server Outage from last Tuesday."
+* *Consistency:* Ensures uniform policy enforcement across thousands of tickets.
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ ADK Architecture
 
-The system follows a **Hub-and-Spoke Coordinator Pattern**, implementing the principles of the **Google Agent Development Kit (ADK)**.
+The system follows a **Hierarchical Swarm Pattern** orchestrated by the ADK Runtime.
 
 ```mermaid
 graph TD
-    User[User Complaint] -->|Ingestion| Coord{Coordinator Agent}
-    Coord -->|1. Analysis| Class[Classification Agent]
-    Coord -->|1. Analysis| Sent[Sentiment Agent]
-    Coord -->|2. Context| Mem[(Vector Memory)]
-    Coord -->|3. Ranking| Prio[Prioritization Agent]
-    Coord -->|4. Strategy| Dec[Decision Agent]
-    Coord -->|5. Draft| Draft[Response Agent]
+    User[User Input] -->|ADK Runtime| Root[Root Agent (sdd)]
+    Root -->|Delegation| Class[Classification Agent]
+    Root -->|Delegation| Prio[Prioritization Agent]
+    Root -->|Delegation| Draft[Response Agent]
     Draft -->|Draft Text| Critic[🕵️ Critic Agent]
     Critic -->|Reject| Draft
-    Critic -->|Approve| Coord
-    Coord -->|Final Output| User
+    Critic -->|Approve| Root
+    Root -->|Final Output| User
 
 ```
 
 ---
 
-## 🤖 The Agent Swarm
+## 🤖 The Swarm Configuration
 
-Each agent in NOVUS has a single responsibility (SRP), ensuring modularity and easier debugging.
+Agents are defined declaratively in `Novus/root_agent.yaml`, ensuring strict adherence to the **LlmAgent** class structure.
 
-| Agent | Model | Role |
+| Agent | Type | Role |
 | --- | --- | --- |
-| **Coordinator** | *Orchestrator* | The "Central Nervous System." Routes data, manages state, and handles error recovery. |
-| **Classification** | `Gemini 2.5 Flash` | Identifies Intent (e.g., "Refund") and Business Category (e.g., "Billing"). |
-| **Sentiment** | `Gemini 2.5 Flash` | Analyzes emotional tone (-1.0 to +1.0) and detects sarcasm. |
-| **Prioritization** | `Gemini 2.5 Flash` | Computes the `Risk Score`. Decides *when* to wake up the Critic. |
-| **Decision** | `Gemini 2.5 Flash` | Determines the *Next Best Action* (Reply, Escalate, Refund, Investigate). |
-| **Drafter** | `Gemini 2.5 Flash` | Generates the actual text response based on the Decision strategy. |
-| **Critic** | `Gemini 2.5 Flash` | **The Gatekeeper.** Reviews drafts for empathy, policy compliance, and safety. |
+| **Root (sdd)** | `LlmAgent` | The Orchestrator. Managed by ADK to coordinate the sub-agent pipeline. |
+| **Classification** | `LlmAgent` | Identifies Intent (e.g., "Refund") and Business Category. |
+| **Prioritization** | `LlmAgent` | Computes the `Risk Score` (0-100) based on sentiment and keywords. |
+| **Decision** | `LlmAgent` | Determines the *Next Best Action* (Reply, Escalate, Refund). |
+| **Critic** | `LlmAgent` | **The Gatekeeper.** Reviews drafts for empathy and safety. |
 
 ---
 
 ## 🛠️ Technical Stack
 
-* **Core Logic:** Python 3.10+
-* **Intelligence:** Google Gemini 2.5 Flash (via `google-generativeai` SDK)
-* **Memory Store:** Local Vector Store (JSON + NumPy) using `text-embedding-004`
-* **Data Validation:** Pydantic (Strict typing for robust JSON parsing)
-* **Environment Management:** `python-dotenv`
-* **Interface:** CLI (Simulated Chat Stream)
+* **Framework:** **Agent Development Kit (ADK)**
+* **Model:** Google Gemini 2.5 Flash
+* **Configuration:** YAML-based Agent Definitions
+* **Runtime:** Python 3.10+
+* **Memory:** Local Vector Store (ADK Session Integration)
 
 ---
 
@@ -90,9 +84,9 @@ Each agent in NOVUS has a single responsibility (SRP), ensuring modularity and e
 
 ### Prerequisites
 
-* Python 3.10 or higher
-* A Google Cloud Project with Vertex AI or Gemini API access
-* An API Key
+* Python 3.10+
+* Agent Development Kit installed
+* Google Gemini API Key
 
 ### Installation
 
@@ -120,28 +114,57 @@ GEMINI_API_KEY="your_google_api_key_here"
 
 
 
-### Running the Agent
+### Running the ADK Agent
 
-NOVUS comes with a built-in demo suite.
+Initialize the ADK runtime to start the agent swarm.
 
 ```bash
+# Run the demo script which initializes the ADK coordinator
 python main.py
 
 ```
 
-*Select Mode:*
+---
 
-* **Option 1 (Batch Demo):** Runs a pre-set list of test cases (Billing error, Fire hazard, Tech support) to showcase the agent's range.
-* **Option 2 (Interactive):** Chat with NOVUS live in the terminal.
+## 📂 Project Structure
+
+The project adheres to the strict ADK directory structure:
+
+```text
+/
+├── Novus/                  # 📦 ADK Project Root
+│   ├── root_agent.yaml     # ⚙️ Master Agent Configuration
+│   ├── critic.py           # Custom Tool/Agent Logic
+│   ├── response_agent.py   # Drafting Logic
+│   └── .adk/               # ADK Session Data
+├── agents/                 # Specialized Tool Definitions
+├── memory/                 # Vector Database Implementation
+├── main.py                 # ADK Runtime Entry Point
+└── requirements.txt        # Dependencies
+
+```
+
+### Agent Configuration Snippet (`root_agent.yaml`)
+
+```yaml
+name: sdd
+model: gemini-2.5-flash
+agent_class: LlmAgent
+instruction: You are the root agent that coordinates other agents.
+sub_agents: 
+  - classification_agent
+  - prioritization_agent
+  - critic_agent
+
+```
 
 ---
 
 ## 🔮 Future Roadmap
 
-* [ ] **Voice Interface:** Integration with Gemini Multimodal capabilities to handle audio complaints.
-* [ ] **Dashboard UI:** A React/Streamlit frontend for real-time visualization of the "Thought Process."
-* [ ] **CRM Webhooks:** Direct integration with Salesforce/Zendesk to fetch real Customer LTV data.
-* [ ] **Containerization:** Docker support for easy cloud deployment.
+* [ ] **ADK Web UI:** Integrate with the ADK visualization dashboard for real-time trace monitoring.
+* [ ] **Multimodal Inputs:** Enable image/audio processing via Gemini 2.5 Flash within the ADK pipeline.
+* [ ] **Enterprise Connectors:** Add Salesforce/Zendesk tools to the agent configuration.
 
 ---
 
@@ -164,11 +187,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <p align="center">
-Built with ❤️ for the TechSprint Hackathon
+Built with ❤️ using the <b>Agent Development Kit</b> for the TechSprint Hackathon
 </p>
 
-<!--,## 🔮 Future Enhancements
--   **Voice Interface**: Integrate Gemini Multimodal capabilities for audio complaints.
--   **CRM Integration**: Connect to Salesforce/Zendesk APIs.
--   **Real-time Dashboard**: Streamlit UI for monitoring agent decisions.
--->
+```
+
+```
