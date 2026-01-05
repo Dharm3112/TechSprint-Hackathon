@@ -1,78 +1,150 @@
-# Customer Complaint Resolver AI Agent
+# ⚡ NOVUS: ADK-Powered Autonomous Resolution Engine
 
-> **Enterprise-Grade AI Agent for Automated Complaint Resolution using Google Gemini & ADK**
+![ADK](https://img.shields.io/badge/Agent_Development_Kit-Enabled-blue?style=for-the-badge&logo=google)
+![AI Model](https://img.shields.io/badge/Google_Gemini-2.5_Flash-orange?style=for-the-badge&logo=google)
+![Architecture](https://img.shields.io/badge/Architecture-Declarative_Swarm-purple?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge)
 
-## 🚀 Overview
-The **Customer Complaint Resolver** is an intelligent, multi-agent system designed to handle complex customer service workflows. It uses a swarm of specialized agents to categorize, prioritize, and resolve complaints with human-level reasoning and self-correcting capabilities.
+> **The Next Generation of Enterprise Support: Built 100% on the Agent Development Kit (ADK).**
 
-Built for the **TechSprint Hackathon**, this solution demonstrates:
-- **Multi-Agent Orchestration**: Specialized agents for Classification, Sentiment, Risk Assessment, Decision Making, and Drafting.
-- **Adaptive Reasoning**: Self-correction loops to refine responses based on confidence scores.
-- **Memory & RAG**: Vector-based memory (using local JSON store + Gemini Embeddings) to recall similar past cases.
-- **Enterprise Readiness**: Structured data models (Pydantic), API-driven architecture, and scalable design.
+---
 
-## 🏗️ Architecture
-The system follows a pipeline architecture orchestrated by a `CoordinatorAgent`:
+## 🧠 The Concept
+**NOVUS** is a deterministic, multi-agent orchestration system built entirely using the **Agent Development Kit (ADK)** framework. 
 
-1.  **Input Processing**: Customer complaint is ingested.
-2.  **Memory Recall**: Agent checks for similar resolved cases.
-3.  **Parallel Analysis**:
-    *   `ClassificationAgent`: Identifies Intent & Category.
-    *   `SentimentAgent`: Assess Urgency & Sentiment Score.
-4.  **Prioritization**: `PrioritizationAgent` assigns a Risk Level & Priority Score.
-5.  **Decision Making**: `DecisionAgent` determines the next action (Reply, Escalate, Refund).
-6.  **Drafting**: `ResponseDraftingAgent` creates a context-aware response.
-7.  **Self-Correction**: System evaluates draft confidence; flags for human review if low.
-8.  **Resolution**: Ticket is saved to memory for future learning.
+By leveraging the power of ADK's declarative nature, NOVUS moves beyond fragile code-based orchestration. Instead, it defines behaviors, instructions, and tools in structured configuration files (`root_agent.yaml`), allowing for a rapidly scalable "Swarm Architecture." Specialized agents collaborate, critique, and refine outcomes before ever interacting with a customer.
 
-## 🛠️ Tech Stack
--   **Orchestration**: Python-based Custom Coordinator (Simulating ADK patterns)
--   **LLM**: Google Gemini 1.5 Flash (`google-generativeai`)
--   **Embeddings**: Gemini Text Embedding 004
--   **Memory**: Lightweight Vector Store (NumPy + JSON)
--   **Data Validation**: Pydantic
+---
 
-## 📂 Structure
-```
-├── agents/             # Specialized Agent Definitions
-│   ├── base_agent.py   # Gemini Wrapper
-│   ├── classification_agent.py
-│   ├── sentiment_agent.py
-│   ├── prioritization_agent.py
-│   ├── decision_agent.py
-│   └── response_agent.py
-├── memory/             # Vector Database Logic
-│   └── vector_db.py
-├── models.py           # Pydantic Data Models
-├── coordinator.py      # Main Orchestrator
-├── main.py             # Demo Entry Point
-└── config.py           # Configuration
-```
+## 🌟 Key Differentiators
 
-## ⚡ Quick Start
+### 🛡️ ADK-Native "Critic Loop"
+Using ADK's sub-agent capabilities, we implemented a dedicated **Critic Agent** guardrail.
+* **Workflow:** The `Drafter` agent outputs a response, which is immediately routed to the `Critic` agent.
+* **Logic:** The Critic evaluates the draft against the computed **Risk Score**.
+* **Self-Correction:** If the tone is mismatched (e.g., too casual for a legal threat), the Critic rejects the output and instructs the swarm to retry.
+* *Result:* Zero "hallucinations" or tone-deaf replies.
+
+### 🧩 Declarative Agent Definitions
+Unlike traditional implementations where agent logic is buried in Python scripts, NOVUS defines its brain in **YAML**.
+* **Modularity:** New agents can be added by simply appending to `sub_agents` in the configuration.
+* **Transparency:** The prompt engineering and instructions are decoupled from the execution logic.
+
+### 🧠 Semantic Memory Integration
+Integrated directly into the ADK flow, NOVUS utilizes **Vector Embeddings** to recall historical resolutions.
+* *Recurring Issue Detection:* "This complaint matches the pattern of the Server Outage from last Tuesday."
+* *Consistency:* Ensures uniform policy enforcement across thousands of tickets.
+
+---
+
+## 🛠️ Technical Stack
+
+* **Framework:** **Agent Development Kit (ADK)**
+* **Model:** Google Gemini 2.5 Flash
+* **Configuration:** YAML-based Agent Definitions
+* **Runtime:** Python 3.10+
+* **Memory:** Local Vector Store (ADK Session Integration)
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.10+
-- Google Gemini API Key
+
+* Python 3.10+
+* Agent Development Kit installed
+* Google Gemini API Key
 
 ### Installation
-1.  Clone the repository.
-2.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Set up environment:
-    Create `.env` file and add:
-    ```
-    GEMINI_API_KEY=your_api_key_here
-    ```
 
-### Run Demo
+1. **Clone the Repository**
 ```bash
-python main.py
+git clone [https://github.com/dharm3112/techsprint-hackathon.git](https://github.com/dharm3112/techsprint-hackathon.git)
+cd techsprint-hackathon
+
 ```
 
-## 🔮 Future Enhancements
--   **Voice Interface**: Integrate Gemini Multimodal capabilities for audio complaints.
--   **CRM Integration**: Connect to Salesforce/Zendesk APIs.
--   **Real-time Dashboard**: Streamlit UI for monitoring agent decisions.
+
+2. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+
+```
+
+
+3. **Configure Environment**
+Create a `.env` file in the root directory:
+```ini
+GEMINI_API_KEY="your_google_api_key_here"
+
+```
+
+
+
+### Running the ADK Agent
+
+Initialize the ADK runtime to start the agent swarm.
+
+```bash
+# Run the demo script which initializes the ADK coordinator
+python main.py
+
+```
+
+---
+
+## 📂 Project Structure
+
+The project adheres to the strict ADK directory structure:
+
+```text
+/
+├── Novus/                  # 📦 ADK Project Root
+│   ├── root_agent.yaml     # ⚙️ Master Agent Configuration
+│   ├── critic.py           # Custom Tool/Agent Logic
+│   ├── response_agent.py   # Drafting Logic
+│   └── .adk/               # ADK Session Data
+├── agents/                 # Specialized Tool Definitions
+├── memory/                 # Vector Database Implementation
+├── main.py                 # ADK Runtime Entry Point
+└── requirements.txt        # Dependencies
+
+```
+
+### Agent Configuration Snippet (`root_agent.yaml`)
+
+```yaml
+name: sdd
+model: gemini-2.5-flash
+agent_class: LlmAgent
+instruction: You are the root agent that coordinates other agents.
+sub_agents: 
+  - classification_agent
+  - prioritization_agent
+  - critic_agent
+
+```
+
+---
+
+## 🔮 Future Roadmap
+
+* [ ] **ADK Web UI:** Integrate with the ADK visualization dashboard for real-time trace monitoring.
+* [ ] **Multimodal Inputs:** Enable image/audio processing via Gemini 2.5 Flash within the ADK pipeline.
+* [ ] **Enterprise Connectors:** Add Salesforce/Zendesk tools to the agent configuration.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<p align="center">
+Built with ❤️ using the <b>Agent Development Kit</b> for the TechSprint Hackathon
+</p>
+
+```
+
+```
