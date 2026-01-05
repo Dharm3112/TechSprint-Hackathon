@@ -6,12 +6,13 @@ import time
 class BaseAgent:
     def __init__(self, name="Base Agent"):
         self.name = name
-        # Configure the API Key
         genai.configure(api_key=GEMINI_API_KEY)
         self.model = genai.GenerativeModel(GENERATIVE_MODEL)
 
     def _generate(self, prompt, json_mode=True):
-        # Reduced sleep time from 4s to 1s for speed
+        """Helper to generate content with Gemini"""
+        
+        # FIX: Reduced sleep from 4.0 to 1.0 to stop the "freeze"
         time.sleep(1.0) 
         
         try:
@@ -32,5 +33,5 @@ class BaseAgent:
             
             return cleaned_text.strip()
         except Exception as e:
-            print(f"Error in {self.name}: {e}")
+            print(f"❌ Error in {self.name}: {e}")
             return None

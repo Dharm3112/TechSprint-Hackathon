@@ -33,10 +33,8 @@ class CoordinatorAgent:
         cls_data = self.classifier.analyze(text)
         sent_data = self.sentiment_analyzer.analyze(text)
         
-        # --- SAFE CONVERSION LOGIC ---
-        # Match the AI's category string to our strict Enum
+        # --- SAFE DATA CONVERSION (Prevents Crashes) ---
         category_str = cls_data.get("category", "Other")
-        # Try to find the matching Enum, default to OTHER if failed
         safe_category = next((c for c in Category if c.value.lower() == category_str.lower()), Category.OTHER)
 
         ticket.analysis = Analysis(
@@ -46,15 +44,12 @@ class CoordinatorAgent:
             sentiment_score=sent_data.get("sentiment_score", 0.0),
             urgency_score=sent_data.get("urgency_score", 5)
         )
-        # -----------------------------
 
         # 3. Prioritization
         print(f"⚖️ Prioritizing (Urgency: {ticket.analysis.urgency_score})...")
-        # Convert Pydantic model back to dict for the agent
         analysis_dict = ticket.analysis.model_dump() 
         pri_data = self.prioritizer.assess(analysis_dict)
         
-        # Safe Enum conversion for Risk
         risk_str = pri_data.get("risk_level", "Medium")
         safe_risk = next((r for r in RiskLevel if r.value.lower() == risk_str.lower()), RiskLevel.MEDIUM)
 
@@ -66,7 +61,6 @@ class CoordinatorAgent:
 
         # 4. Decision
         print("🤔 Deciding next steps...")
-        # Convert models to dicts for the prompt
         dec_data = self.decision_maker.decide(
             text, 
             analysis_dict, 
@@ -74,7 +68,6 @@ class CoordinatorAgent:
             similar_cases
         )
         
-        # Safe Enum conversion for Action
         action_str = dec_data.get("action", "Reply")
         safe_action = next((a for a in ActionType if a.value.lower() == action_str.lower()), ActionType.REPLY)
 
