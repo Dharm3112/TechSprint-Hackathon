@@ -1,0 +1,3 @@
+{"id": "complaint_101", "embedding": [0.012, -0.045, ...], "restricts": [{"namespace": "category", "allow": ["billing"]}], "metadata": "User reported double charge on Jan 5th. Resolved via refund."}
+{"id": "complaint_102", "embedding": [-0.082, 0.123, ...], "restricts": [{"namespace": "category", "allow": ["technical"]}], "metadata": "App crash on login screen. iOS v15.4. Known bug #404."}
+{"id": "complaint_103", "embedding": [0.005, -0.009, ...], "restricts": [{"namespace": "category", "allow": ["shipping"]}], "metadata": "Order delayed by 3 days. User requested compensation."}
