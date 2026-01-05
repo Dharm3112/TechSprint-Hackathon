@@ -114,7 +114,7 @@ The project adheres to the strict ADK directory structure:
 ### Agent Configuration Snippet (`root_agent.yaml`)
 
 ```yaml
-name: sdd
+name: Novus
 model: gemini-2.5-flash
 agent_class: LlmAgent
 instruction: You are the root agent that coordinates other agents.
@@ -124,7 +124,7 @@ sub_agents:
   - critic_agent
 
 ```
-
+<!--
 ---
 
 ## 🔮 Future Roadmap
@@ -134,7 +134,7 @@ sub_agents:
 * [ ] **Enterprise Connectors:** Add Salesforce/Zendesk tools to the agent configuration.
 
 ---
-
+-->
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
@@ -144,7 +144,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <p align="center">
 Built with ❤️ using the <b>Agent Development Kit</b> for the TechSprint Hackathon
 </p>
-
-```
-
-```
