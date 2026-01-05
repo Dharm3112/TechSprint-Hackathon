@@ -45,7 +45,7 @@ def solve_complaint(complaint_text: str) -> dict:
 agent = Agent(
     name="sentinel_support",
     # MUST MATCH config.py model
-    model="gemini-1.5-flash-001",
+    model="gemini-3-flash",
     description="Sentinel Customer Support System",
     instruction="""
     You are the interface for the Sentinel Support System.
