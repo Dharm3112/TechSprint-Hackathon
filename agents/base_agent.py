@@ -13,7 +13,7 @@ class BaseAgent:
         """Helper to generate content with Gemini"""
         # Rate Limiting for Free Tier (approx 15 RPM = ~4s delay)
         # We add a small buffer to be safe.
-        time.sleep(10.0) 
+        time.sleep(4.0) 
         
         try:
             full_prompt = prompt
