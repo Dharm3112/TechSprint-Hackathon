@@ -37,39 +37,6 @@ Integrated directly into the ADK flow, NOVUS utilizes **Vector Embeddings** to r
 
 ---
 
-## 🏗️ ADK Architecture
-
-The system follows a **Hierarchical Swarm Pattern** orchestrated by the ADK Runtime.
-
-```mermaid
-graph TD
-    User[User Input] -->|ADK Runtime| Root[Root Agent (sdd)]
-    Root -->|Delegation| Class[Classification Agent]
-    Root -->|Delegation| Prio[Prioritization Agent]
-    Root -->|Delegation| Draft[Response Agent]
-    Draft -->|Draft Text| Critic[🕵️ Critic Agent]
-    Critic -->|Reject| Draft
-    Critic -->|Approve| Root
-    Root -->|Final Output| User
-
-```
-
----
-
-## 🤖 The Swarm Configuration
-
-Agents are defined declaratively in `Novus/root_agent.yaml`, ensuring strict adherence to the **LlmAgent** class structure.
-
-| Agent | Type | Role |
-| --- | --- | --- |
-| **Root (sdd)** | `LlmAgent` | The Orchestrator. Managed by ADK to coordinate the sub-agent pipeline. |
-| **Classification** | `LlmAgent` | Identifies Intent (e.g., "Refund") and Business Category. |
-| **Prioritization** | `LlmAgent` | Computes the `Risk Score` (0-100) based on sentiment and keywords. |
-| **Decision** | `LlmAgent` | Determines the *Next Best Action* (Reply, Escalate, Refund). |
-| **Critic** | `LlmAgent` | **The Gatekeeper.** Reviews drafts for empathy and safety. |
-
----
-
 ## 🛠️ Technical Stack
 
 * **Framework:** **Agent Development Kit (ADK)**
