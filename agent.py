@@ -43,12 +43,12 @@ def solve_complaint(complaint_text: str) -> dict:
 
 # 4. Define the ADK Agent
 agent = Agent(
-    name="sentinel_support",
+    name="Novus",
     # MUST MATCH config.py model
-    model="gemini-3-flash",
-    description="Sentinel Customer Support System",
+    model="gemini-2.5-flash-tts",
+    description="Customer Complaint Resolver Agent",
     instruction="""
-    You are the interface for the Sentinel Support System.
+    You are the interface for the Novus.
     
     Your ONLY goal is to help users by using the 'solve_complaint' tool.
     

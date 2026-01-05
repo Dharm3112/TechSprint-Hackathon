@@ -3,78 +3,87 @@ from agents.sentiment_agent import SentimentAgent
 from agents.prioritization_agent import PrioritizationAgent
 from agents.decision_agent import DecisionAgent
 from agents.response_agent import ResponseDraftingAgent
+from agents.critic import CriticAgent  # <--- IMPORT THE CRITIC
 from memory.vector_db import MemoryAgent
 from models import Complaint, ComplaintTicket
-import uuid
-import datetime
+import sys
 
 class CoordinatorAgent:
     def __init__(self):
-        # Initialize the swarm
+        # Initialize the Novus Swarm
         self.classifier = ClassificationAgent()
         self.sentiment_analyzer = SentimentAgent()
         self.prioritizer = PrioritizationAgent()
         self.decision_maker = DecisionAgent()
         self.drafter = ResponseDraftingAgent()
+        self.critic = CriticAgent()  # <--- INITIALIZE CRITIC
         self.memory = MemoryAgent()
         
     def process_complaint(self, text: str, customer_id: str = "Unknown") -> ComplaintTicket:
-        print(f"\n--- Processing Complaint: {text[:50]}... ---")
+        print(f"\n--- 🔵 Novus Agent Processing: {text[:40]}... ---")
         
-        # 0. Create Ticket Object
-        ticket = ComplaintTicket(
-            complaint=Complaint(
-                customer_id=customer_id,
-                text=text
-            )
-        )
-        ticket.history.append("Ticket Created")
+        ticket = ComplaintTicket(complaint=Complaint(customer_id=customer_id, text=text))
 
-        # 1. Memory Check (RAG)
-        print("🧠 Checking Memory...")
-        similar_cases = self.memory.search_similar(text)
-        ticket.history.append(f"Memory Accessed: {similar_cases[:30]}...")
-
-        # 2. Parallel Analysis (Classification & Sentiment)
-        print("🔍 Analyzing Content...")
+        # 1. Understand (Parallel Analysis)
+        print("🔍 Novus: Analyzing Intent & Sentiment...")
         classification = self.classifier.analyze(text)
         sentiment = self.sentiment_analyzer.analyze(text)
-        
-        # Merge Analysis
         ticket.analysis = {**classification, **sentiment}
-        ticket.history.append(f"Analysis Complete: {ticket.analysis['intent']}, Urgency: {ticket.analysis['urgency_score']}")
+        
+        # 2. Recall (Memory)
+        print("🧠 Novus: Checking History...")
+        similar_cases = self.memory.search_similar(text)
 
-        # 3. Prioritization
-        print("⚖️ Prioritizing...")
+        # 3. Rank (Prioritization)
         ticket.priority = self.prioritizer.assess(ticket.analysis)
-        ticket.history.append(f"Priority Set: {ticket.priority['score']}, Risk: {ticket.priority['risk_level']}")
-
-        # 4. Decision Making
-        print("🤔 Deciding Action...")
-        decision_input = {
-            "text": text,
-            "analysis": ticket.analysis,
-            "priority": ticket.priority,
-            "history": similar_cases
-        }
+        print(f"⚖️ Novus: Priority Set to {ticket.priority['score']} (Risk: {ticket.priority['risk_level']})")
+        
+        # 4. Decide (Strategy)
         ticket.decision = self.decision_maker.decide(text, ticket.analysis, ticket.priority, similar_cases)
-        ticket.history.append(f"Decision Made: {ticket.decision['action']}")
 
-        # 5. Drafting Response (if applicable)
-        if ticket.decision['action'] in ["Reply", "Escalate", "Refund"]: # Draft even for escalation
-            print("✍️ Drafting Response...")
-            ticket.response = self.drafter.draft(text, ticket.decision, similar_cases)
-            ticket.history.append("Response Drafted")
+        # 5. Act & Refine (The Feedback Loop)
+        if ticket.decision['action'] in ["Reply", "Escalate", "Refund"]:
+            print("✍️ Novus: Drafting Initial Response...")
             
-            # 6. Re-Evaluation (Self-Correction Loop)
-            # If the response confidence is low or urgency is high, we might want to flag it or adjust
-            if ticket.response['confidence_score'] < 0.7:
-                 print("⚠️ Low Confidence Response - Flagging for Human Review")
-                 ticket.decision['requires_human_approval'] = True
-                 ticket.history.append("Flagged for Human Review (Low Confidence)")
+            # Initial Draft
+            draft = self.drafter.draft(text, ticket.decision, similar_cases)
+            
+            # --- CRITIC LOOP ---
+            max_retries = 2
+            attempts = 0
+            
+            while attempts < max_retries:
+                print(f"   🕵️ Novus Critic: Reviewing Draft (Attempt {attempts+1})...")
+                critique = self.critic.review(
+                    text, 
+                    draft['draft_content'], 
+                    ticket.analysis['urgency_score']
+                )
+                
+                if critique['status'] == "PASS":
+                    print("   ✅ Novus Critic: Approved.")
+                    break
+                else:
+                    print(f"   ❌ Novus Critic: Rejected. Feedback: '{critique['feedback']}'")
+                    print("   🔄 Novus Drafter: Rewriting...")
+                    # Pass feedback back to drafter
+                    draft = self.drafter.draft(
+                        text, 
+                        ticket.decision, 
+                        similar_cases, 
+                        feedback=critique['feedback']
+                    )
+                    attempts += 1
+            
+            ticket.response = draft
+            
+            # Final Safety Catch
+            if critique.get('escalation_needed'):
+                print("🚨 Novus Safety Protocol: Force Escalate triggered by Critic.")
+                ticket.decision['action'] = "Escalate (Forced)"
 
-        # 7. Close Loop (Save to Memory if resolved/replied) -> In a real app this happens after human approval
-        # For this demo we save processed tickets to build history
+        # 6. Memorize
+        print("💾 Novus: Saving Resolution to Memory...")
         self.memory.save_complaint(
             ticket.complaint.id, 
             text, 
