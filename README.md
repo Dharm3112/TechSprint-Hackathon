@@ -136,28 +136,6 @@ python main.py
 
 ---
 
-## 📂 Project Structure
-
-```text
-/
-├── agents/                 # 🧠 The Brains
-│   ├── base_agent.py       # wrapper for Gemini API
-│   ├── critic.py           # The Self-Correction Logic
-│   ├── classification_agent.py
-│   ├── response_agent.py
-│   └── ...
-├── memory/                 # 💾 The Memory
-│   ├── vector_db.py        # RAG Implementation
-│   └── index_data.jsonl    # Persistent storage
-├── models.py               # 📐 Pydantic Data Schemas
-├── coordinator.py          # 🚦 Main Workflow Orchestrator
-├── main.py                 # 🎬 Entry Point
-└── requirements.txt        # Dependencies
-
-```
-
----
-
 ## 🔮 Future Roadmap
 
 * [ ] **Voice Interface:** Integration with Gemini Multimodal capabilities to handle audio complaints.
