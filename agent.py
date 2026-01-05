@@ -1,53 +1,61 @@
 from google.adk.agents import Agent
 from coordinator import CoordinatorAgent
+from dotenv import load_dotenv
+import os
 
-# 1. Initialize your Sentinel Brain
-# We create one instance so it keeps memory between chats
-sentinel = CoordinatorAgent()
+# 1. LOAD API KEYS (Crucial for ADK Web)
+load_dotenv() 
 
-# 2. Define the Tool Function
-# This function acts as the "API" that ADK calls
-def resolve_complaint_tool(complaint_text: str) -> dict:
+# 2. Initialize the Brain
+print("🔌 Initializing Sentinel Coordinator...")
+try:
+    sentinel_system = CoordinatorAgent()
+except Exception as e:
+    print(f"❌ CRITICAL ERROR: Coordinator failed to start. Check config.py! Error: {e}")
+    sentinel_system = None
+
+# 3. Define the Tool
+def solve_complaint(complaint_text: str) -> dict:
     """
-    Analyzes a customer complaint, calculates risk, and drafts a response.
+    Analyzes a customer complaint and drafts a response using the Sentinel System.
     
     Args:
         complaint_text: The full text of the customer's issue.
     """
-    print(f"🔌 ADK is processing: {complaint_text[:20]}...")
+    print(f"⚡ ADK Processing: {complaint_text}")
     
-    # Call your existing logic
-    ticket = sentinel.process_complaint(complaint_text, "ADK-WEB-USER")
-    
-    # Format the output for the Web UI
-    result = {
-        "status": "SUCCESS",
-        "risk_level": ticket.priority.risk_level.value,
-        "priority_score": ticket.priority.score,
-        "suggested_action": ticket.decision.action.value,
-        "draft_response": "NO RESPONSE"
-    }
-    
-    if ticket.response:
-        result["draft_response"] = ticket.response.draft_content
-        
-    return result
+    if not sentinel_system:
+        return {"error": "System failed to initialize. Check terminal logs."}
 
-# 3. Define the ADK Agent
-# This is the object 'adk web' will actually load
+    try:
+        # Run the pipeline
+        ticket = sentinel_system.process_complaint(complaint_text, "ADK-USER")
+        
+        return {
+            "status": "SUCCESS",
+            "priority_score": ticket.priority.score,
+            "risk_level": ticket.priority.risk_level.value,
+            "suggested_action": ticket.decision.action.value,
+            "draft_response": ticket.response.draft_content if ticket.response else "No response required."
+        }
+    except Exception as e:
+        return {"error": f"Processing failed: {str(e)}"}
+
+# 4. Define the ADK Agent
 agent = Agent(
-    name="sentinel_resolver",
-    # Use the model you configured in config.py or a standard one
-    model="gemini-1.5-flash-001", 
-    description="An enterprise-grade customer complaint resolution agent.",
+    name="sentinel_support",
+    # MUST MATCH config.py model
+    model="gemini-1.5-flash-001",
+    description="Sentinel Customer Support System",
     instruction="""
-    You are the interface for the Sentinel Complaint System.
+    You are the interface for the Sentinel Support System.
     
-    Your goal is to help users resolve complaints by using the 'resolve_complaint_tool'.
+    Your ONLY goal is to help users by using the 'solve_complaint' tool.
     
-    1. When the user provides a complaint, IMMEDIATELY call 'resolve_complaint_tool'.
-    2. Do not try to answer it yourself. Use the tool.
-    3. Once the tool returns the 'draft_response', display it clearly to the user.
+    RULES:
+    1. When the user types ANYTHING, immediately call 'solve_complaint'.
+    2. Do not answer from your own knowledge.
+    3. Once the tool finishes, show the 'draft_response' to the user.
     """,
-    tools=[resolve_complaint_tool]
+    tools=[solve_complaint]
 )

@@ -1,4 +1,6 @@
 google-generativeai
+google-adk
+chromadb
 python-dotenv
 pydantic
 numpy
